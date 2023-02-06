@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo Ping-Pong</title>
+    <style>
+        *{
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+    <canvas></canvas>
+    <script>
+        const canvasEl = document.querySelector("canvas")
+        const canvasCtx = canvasEl.getContext("2d")
+        const gapX = 10
+        const lineWidth = 15
+
+        const field = {
+            W: window.innerWidth,
+            H:window.innerHeight,
+            draw: function(){
+            // desenhando o campo com a dimensão da tela toda
+            canvasCtx.fillStyle = "#286047"
+            canvasCtx.fillRect( 0, 0, this.W, this.H)
+            },
+        }
+
+        const line = {
+            W: 15,
+            H: field.H,
+            draw: function(){
+             //Desenhando a linha central
+            canvasCtx.fillStyle = "#ffffff"
+            canvasCtx.fillRect( field.W / 2 - this.W / 2, 0, this.W, this.H)
+            },
+        }
+
+        const leftPaddle = {
+            X: gapX,
+            Y: 50,
+            W: line.W,
+            H: 100,
+            draw: function(){
+            //Desenhando a raquete esquerda
+            canvasCtx.fillRect(this.X, this.Y, this.W, this.H)
+            },
+        }
+
+        const rightPaddle = {
+            X: field.W - line.W - gapX,
+            Y: 150,
+            W: line.W,
+            H: 100,
+            draw: function(){
+            //Desenhando a raquete direita
+            canvasCtx.fillRect(this.X, this.Y, this.W, this.H)
+            }
+        }
+
+        function setup(){
+            canvasEl.width = canvasCtx.width = field.W
+            canvasEl.height = canvasCtx.height = field.H
+        }
+
+        function draw(){
+            field.draw()
+            line.draw()
+            leftPaddle.draw()
+            rightPaddle.draw()
+
+            //Desenhando a bolinha
+            canvasCtx.beginPath()
+            canvasCtx.arc(150, 300, 15, 0, 2 * Math.PI, false)
+            canvasCtx.fill()
+
+            //Desenhando o Placar
+            canvasCtx.font = "bold 72px Arial"
+            canvasCtx.textAlign = "center"
+            canvasCtx.textBaseline = "top"
+            canvasCtx.fillStyle = "#01341D"
+            canvasCtx.fillText('0', window.innerWidth / 4, 50)
+            canvasCtx.fillText('0', window.innerWidth / 4 + window.innerWidth / 2, 50)
+        }
+
+        setup()
+        draw()
+    </script>
+</body>
+</html>
