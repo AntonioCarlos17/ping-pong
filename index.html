@@ -48,6 +48,7 @@
             H: 100,
             draw: function(){
             //Desenhando a raquete esquerda
+            canvasCtx.fillStyle = "#ffffff"
             canvasCtx.fillRect(this.X, this.Y, this.W, this.H)
             },
         }
@@ -59,8 +60,46 @@
             H: 100,
             draw: function(){
             //Desenhando a raquete direita
+            canvasCtx.fillStyle = "#ffffff"
             canvasCtx.fillRect(this.X, this.Y, this.W, this.H)
+            },
+        }
+
+        const placar = {
+            humano: 1,
+            cpu: 2,
+            draw: function(){
+            //Desenhando o Placar para ficar por trás da bolinha precisa ser chamado antes da função bolinha
+            canvasCtx.font = "bold 72px Arial"
+            canvasCtx.textAlign = "center"
+            canvasCtx.textBaseline = "top"
+            canvasCtx.fillStyle = "#01341D"
+            canvasCtx.fillText(this.humano, field.W / 4, 50)
+            canvasCtx.fillText(this.cpu, field.W / 4 + field.W / 2, 50)
+        }
+
             }
+        
+
+        const ball = {
+            X: 60,
+            Y: 10,
+            R: 15,
+            speed: 3.5,
+            _move: function(){
+                this.X += 1 * this.speed
+                this.Y += 1 * this.speed
+            },
+            draw: function(){
+            //Desenhando a bolinha
+            canvasCtx.fillStyle = "#ffffff"
+            canvasCtx.beginPath()
+            canvasCtx.arc(this.X, this.Y, this.R, 0, 2 * Math.PI, false)
+            canvasCtx.fill()
+
+            this._move()
+            },
+            
         }
 
         function setup(){
@@ -73,23 +112,29 @@
             line.draw()
             leftPaddle.draw()
             rightPaddle.draw()
+            placar.draw()
+            ball.draw()       
+        }
 
-            //Desenhando a bolinha
-            canvasCtx.beginPath()
-            canvasCtx.arc(150, 300, 15, 0, 2 * Math.PI, false)
-            canvasCtx.fill()
+        window.animateFrame = (function(){
+            return(window.requestAnimationFrame ||
+            window.webkitRequestAnimationFrame ||
+            window.mozRequestAnimationFrame ||
+            window.oRequestAnimationFrame ||
+            window.msRequestAnimationFrame || function(callback){
+                return window.setTimeout(callback, 1000 / 60)
+            }
+            )
+        })()
 
-            //Desenhando o Placar
-            canvasCtx.font = "bold 72px Arial"
-            canvasCtx.textAlign = "center"
-            canvasCtx.textBaseline = "top"
-            canvasCtx.fillStyle = "#01341D"
-            canvasCtx.fillText('0', window.innerWidth / 4, 50)
-            canvasCtx.fillText('0', window.innerWidth / 4 + window.innerWidth / 2, 50)
+        function main(){
+            animateFrame(main)
+            draw()
         }
 
         setup()
-        draw()
+        main()
+
     </script>
 </body>
 </html>
