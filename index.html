@@ -21,9 +21,14 @@
         const gapX = 10
         const lineWidth = 15
 
+        const seta = {
+            X: 1,
+            Y: 1,
+        }
+
         const field = {
             W: window.innerWidth,
-            H:window.innerHeight,
+            H: window.innerHeight,
             draw: function(){
             // desenhando o campo com a dimensão da tela toda
             canvasCtx.fillStyle = "#286047"
@@ -32,7 +37,7 @@
         }
 
         const line = {
-            W: 15,
+            W: 18,
             H: field.H,
             draw: function(){
              //Desenhando a linha central
@@ -43,31 +48,47 @@
 
         const leftPaddle = {
             X: gapX,
-            Y: 50,
+            Y: 0,
             W: line.W,
-            H: 100,
+            H: 150,
+            _move: function(){
+                this.Y = seta.Y / 1.15
+            },
             draw: function(){
             //Desenhando a raquete esquerda
             canvasCtx.fillStyle = "#ffffff"
             canvasCtx.fillRect(this.X, this.Y, this.W, this.H)
+
+            this._move()
             },
         }
 
         const rightPaddle = {
             X: field.W - line.W - gapX,
-            Y: 150,
+            Y: 0,
             W: line.W,
-            H: 100,
+            H: 150,
+            _move: function(){
+                this.Y = ball.Y 
+            },
             draw: function(){
             //Desenhando a raquete direita
             canvasCtx.fillStyle = "#ffffff"
             canvasCtx.fillRect(this.X, this.Y, this.W, this.H)
+            
+            this._move()
             },
         }
 
         const placar = {
-            humano: 1,
-            cpu: 2,
+            humano: 0,
+            cpu: 0,
+            increaseHumano: function(){
+                this.humano++
+            },
+            increaseCpu: function(){
+                this.cpu++
+            },
             draw: function(){
             //Desenhando o Placar para ficar por trás da bolinha precisa ser chamado antes da função bolinha
             canvasCtx.font = "bold 72px Arial"
@@ -82,13 +103,54 @@
         
 
         const ball = {
-            X: 60,
-            Y: 10,
+            X: 80,
+            Y: 150,
             R: 15,
-            speed: 3.5,
+            speed: 5,
+            directionX: 1,
+            directionY: 1,
+            _calcPosition: function(){
+                //rebater a bolinha na raquete do cpu
+                if(this.X > field.W - this.R - rightPaddle.W - gapX){
+                    if(this.Y + this.R > rightPaddle.Y && this.Y - this.R < rightPaddle.Y + rightPaddle.H){
+                    this._reverseX()
+                    }else{
+                        placar.increasehumano()
+                        this._pontuar()
+                    }
+                }
+                // rebater a bolinha na taquete do player
+                if(this.X < field.W - field.W + line.W + this.R + gapX){
+
+                    if(this.Y + this.R > leftPaddle.Y && this.Y - this.R < leftPaddle.H + leftPaddle.Y) {
+                        this._reverseX()
+                    }else{
+                        placar.increaseCpu()
+                        this._pontuar() 
+                    }
+                }
+
+                //função de rebater nas laterais
+                if((this.Y - this.R < 0 && this.directionY < 0) ||
+            (this.Y > field.H - this.R && this.directionY > 0)){
+
+                    this._reverseY()
+                }
+            },
+            
+            _reverseX: function(){
+                this.directionX *= -1   
+            },
+            _reverseY: function(){
+                this.directionY *= -1
+            },
+            _pontuar: function(){
+                this.X = field.W / 2
+                this.Y = field.H / 2
+            },
             _move: function(){
-                this.X += 1 * this.speed
-                this.Y += 1 * this.speed
+                this.X += this.directionX * this.speed
+                this.Y += this.directionY * this.speed
             },
             draw: function(){
             //Desenhando a bolinha
@@ -97,6 +159,7 @@
             canvasCtx.arc(this.X, this.Y, this.R, 0, 2 * Math.PI, false)
             canvasCtx.fill()
 
+            this._calcPosition()
             this._move()
             },
             
@@ -110,9 +173,12 @@
         function draw(){
             field.draw()
             line.draw()
+
             leftPaddle.draw()
             rightPaddle.draw()
+
             placar.draw()
+            
             ball.draw()       
         }
 
@@ -135,6 +201,10 @@
         setup()
         main()
 
+        canvasEl.addEventListener("mousemove", function (e){
+            seta.X = e.pageX
+            seta.Y = e.pageY
+        })
     </script>
 </body>
 </html>
