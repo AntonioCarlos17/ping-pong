@@ -37,7 +37,7 @@
         }
 
         const line = {
-            W: 18,
+            W: 13,
             H: field.H,
             draw: function(){
              //Desenhando a linha central
@@ -65,11 +65,20 @@
 
         const rightPaddle = {
             X: field.W - line.W - gapX,
-            Y: 0,
+            Y: 30,
             W: line.W,
             H: 150,
+            speed: 2,
             _move: function(){
-                this.Y = ball.Y 
+                if(this.Y + this.H / 2 < ball.Y + ball.R){
+                    this.Y += this.speed
+                }else {
+                    
+                    this.Y -= this.speed
+                }
+            },
+            _speedUp: function(){
+            this.speed += 1
             },
             draw: function(){
             //Desenhando a raquete direita
@@ -83,11 +92,15 @@
         const placar = {
             humano: 0,
             cpu: 0,
+            fase: 0,
             increaseHumano: function(){
                 this.humano++
             },
             increaseCpu: function(){
                 this.cpu++
+            },
+            increaseFase: function(){
+                this.fase++
             },
             draw: function(){
             //Desenhando o Placar para ficar por trás da bolinha precisa ser chamado antes da função bolinha
@@ -96,6 +109,7 @@
             canvasCtx.textBaseline = "top"
             canvasCtx.fillStyle = "#01341D"
             canvasCtx.fillText(this.humano, field.W / 4, 50)
+            canvasCtx.fillText(this.fase, field.W / 1.9, 50)
             canvasCtx.fillText(this.cpu, field.W / 4 + field.W / 2, 50)
         }
 
@@ -103,10 +117,10 @@
         
 
         const ball = {
-            X: 80,
+            X: 90,
             Y: 150,
             R: 15,
-            speed: 5,
+            speed: 7,
             directionX: 1,
             directionY: 1,
             _calcPosition: function(){
@@ -115,7 +129,7 @@
                     if(this.Y + this.R > rightPaddle.Y && this.Y - this.R < rightPaddle.Y + rightPaddle.H){
                     this._reverseX()
                     }else{
-                        placar.increasehumano()
+                        placar.increaseHumano()
                         this._pontuar()
                     }
                 }
@@ -126,7 +140,7 @@
                         this._reverseX()
                     }else{
                         placar.increaseCpu()
-                        this._pontuar() 
+                        this._pontuar()
                     }
                 }
 
@@ -144,7 +158,14 @@
             _reverseY: function(){
                 this.directionY *= -1
             },
+            _speedUp: function(){
+                this.speed += 2
+            },
             _pontuar: function(){
+                this._speedUp()
+
+                rightPaddle._speedUp()
+
                 this.X = field.W / 2
                 this.Y = field.H / 2
             },
